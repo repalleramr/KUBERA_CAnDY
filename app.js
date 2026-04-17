@@ -294,8 +294,8 @@ function kumbhInsights(rows){
     processSide('Y', row.y, chakra, meta); processSide('K', row.k, chakra, meta); rowMeta.set(chakra, meta);
   }
   
-  const yStats = Object.entries(counts.Y).filter(([n])=>n!=='0').map(([n,c])=>`<span class="pill">[${n}]: ${c}</span>`);
-  const kStats = Object.entries(counts.K).filter(([n])=>n!=='0').map(([n,c])=>`<span class="pill">[${n}]: ${c}</span>`);
+  const yStats = Object.entries(counts.Y).filter(([n])=>n!=='0').map(([n,c])=>`<span class="pill">[${romanMap[Number(n)]}]: ${c}</span>`);
+  const kStats = Object.entries(counts.K).filter(([n])=>n!=='0').map(([n,c])=>`<span class="pill">[${romanMap[Number(n)]}]: ${c}</span>`);
   
   return { 
       rowMeta, counts, details, 
@@ -867,7 +867,6 @@ function processDataImport(text) {
     }
 }
 
-// 🔥 DRISHTI SPECIFIC EXPORTS FIXED 🔥
 async function exportDrishtiCsv() {
     if (!Array.isArray(state.drishti) || state.drishti.length === 0) {
         showToast('EMPTY', 'No data to export', 'warn'); return;
@@ -978,7 +977,6 @@ function setupControls() {
   });
   document.addEventListener('focusin', e => { const el = e.target; if(el instanceof HTMLInputElement && el.matches('[data-ladder-index]')) setTimeout(() => el.select(), 0); });
   
-  // 🔥 DRISHTI BINDS 🔥
   safeBind('exportCsvBtn', () => { if (typeof exportDrishtiCsv === 'function') exportDrishtiCsv(); else showToast('INFO', 'Drishti CSV export not available', 'warn'); });
   safeBind('exportPdfBtn', () => { if (typeof exportDrishtiPdf === 'function') exportDrishtiPdf(); else showToast('INFO', 'PDF export not available', 'warn'); });
   
@@ -1029,34 +1027,32 @@ function setupControls() {
   safeBind('historyUndoBtn', () => { if(typeof undoLast === 'function') undoLast(); });
 }
 
-// 🔥 FORCED PWA INSTALL LOGIC 🔥
+// 🔥 FORCED INSTALL LOGIC WITH BUILT-IN BYPASS NOTIFICATION 🔥
 function setupInstall(){
     window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
         deferredPrompt = e;
         const btn = q('installBtn');
         if(btn) {
-            btn.style.background = '#40b46b'; // Turns green!
+            btn.style.background = '#40b46b'; 
             btn.style.color = '#fff';
             btn.textContent = 'READY TO INSTALL';
         }
     });
     
-    const btn = q('installBtn');
-    if(btn) {
-        btn.onclick = async () => {
-            if(!deferredPrompt) {
-                alert("Browser says 'Not Ready'! 🛑\n\n1. Did you push your manifest.json to GitHub?\n2. Did you clear your phone's browser cache?\n3. Are you using an iPhone? (iPhones block this button. Use Share -> Add to Home Screen instead).");
-                return;
-            }
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if(outcome === 'accepted') {
-                deferredPrompt = null;
-                btn.classList.add('hidden');
-            }
-        };
-    }
+    safeBind('installBtn', async () => {
+        if(!deferredPrompt) {
+            showToast('INSTALL UNAVAILABLE', 'Use your browser menu: Share -> Add to Home Screen', 'warn');
+            return;
+        }
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if(outcome === 'accepted') {
+            deferredPrompt = null;
+            const btn = q('installBtn');
+            if(btn) btn.classList.add('hidden');
+        }
+    });
 }
 
 function initApp() {
