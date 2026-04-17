@@ -1,47 +1,16 @@
-const CACHE_NAME = 'kubera-cache-v6-forced-update';
-const urlsToCache = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js'
-];
+const CACHE_NAME = 'kubera-omega-v1';
 
-// 🔥 INSTALL: Force the new worker to take over immediately
-self.addEventListener('install', event => {
-  self.skipWaiting(); 
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+self.addEventListener('install', (e) => {
+    self.skipWaiting();
 });
 
-// 🔥 ACTIVATE: The Cache-Buster! Deletes all old, broken versions from the phone's memory
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
+self.addEventListener('activate', (e) => {
+    self.clients.claim();
 });
 
-// 🔥 FETCH: Serve from new cache, fall back to network
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
-  );
+// A dummy fetch event is required by browsers to pass the PWA Install check
+self.addEventListener('fetch', (e) => {
+    e.respondWith(
+        fetch(e.request).catch(() => new Response('Kubera is running offline.'))
+    );
 });
