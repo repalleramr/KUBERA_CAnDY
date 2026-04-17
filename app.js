@@ -182,13 +182,11 @@ function statusCode(info){
 }
 function vijayDarshanaDisplay(info){ const bet=currentBetFor(info); return { bet, displayStep:Math.max(1,(Number(info.step)||1)-1), displayNet:(bet*8)-(Number(info.prevLoss)||0) }; }
 
-// 🔥 RENDER BOARDS: SELECTIVE UPDATING TO PRESERVE ANIMATIONS 🔥
 function renderBoards(){
   ['Y','K'].forEach(side=>{
     const host=q(side==='Y'?'boardY':'boardK'); if(!host) return;
     const layout = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'D1', 0, 'D2'];
     
-    // Create grid ONLY if empty to preserve inner DOM for Candy Crush effects
     if (host.children.length === 0) {
         layout.forEach(n => {
             const btn = document.createElement('button');
@@ -203,7 +201,6 @@ function renderBoards(){
         });
     }
 
-    // Now simply update properties on existing nodes without wiping innerHTML
     layout.forEach((n, idx) => {
         const btn = host.children[idx];
         const isDummy = typeof n === 'string';
@@ -981,7 +978,7 @@ function setupControls() {
   });
   document.addEventListener('focusin', e => { const el = e.target; if(el instanceof HTMLInputElement && el.matches('[data-ladder-index]')) setTimeout(() => el.select(), 0); });
   
-  // 🔥 FIXED DRISHTI BINDS 🔥
+  // 🔥 DRISHTI BINDS NOW LINKED TO THE FIXED EXPORT FUNCTIONS
   safeBind('exportCsvBtn', () => { if (typeof exportDrishtiCsv === 'function') exportDrishtiCsv(); else showToast('INFO', 'Drishti CSV export not available', 'warn'); });
   safeBind('exportPdfBtn', () => { if (typeof exportDrishtiPdf === 'function') exportDrishtiPdf(); else showToast('INFO', 'PDF export not available', 'warn'); });
   
@@ -1041,7 +1038,6 @@ function initApp() {
     try { setupInstall(); } catch(e) { console.error('setupInstall failed:', e); }
     try { renderAll(); } catch(e) { console.error('renderAll failed:', e); }
 }
-navigator.serviceWorker.register('./service-worker.js')
 
 if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{})); }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
