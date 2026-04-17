@@ -1041,6 +1041,7 @@ function initApp() {
     try { setupInstall(); } catch(e) { console.error('setupInstall failed:', e); }
     try { renderAll(); } catch(e) { console.error('renderAll failed:', e); }
 }
+navigator.serviceWorker.register('./service-worker.js')
 
 if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{})); }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initApp); } else { initApp(); }
