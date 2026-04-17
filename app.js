@@ -978,7 +978,7 @@ function setupControls() {
   });
   document.addEventListener('focusin', e => { const el = e.target; if(el instanceof HTMLInputElement && el.matches('[data-ladder-index]')) setTimeout(() => el.select(), 0); });
   
-  // 🔥 DRISHTI BINDS NOW LINKED TO THE FIXED EXPORT FUNCTIONS
+  // 🔥 DRISHTI BINDS 🔥
   safeBind('exportCsvBtn', () => { if (typeof exportDrishtiCsv === 'function') exportDrishtiCsv(); else showToast('INFO', 'Drishti CSV export not available', 'warn'); });
   safeBind('exportPdfBtn', () => { if (typeof exportDrishtiPdf === 'function') exportDrishtiPdf(); else showToast('INFO', 'PDF export not available', 'warn'); });
   
@@ -1029,7 +1029,35 @@ function setupControls() {
   safeBind('historyUndoBtn', () => { if(typeof undoLast === 'function') undoLast(); });
 }
 
-function setupInstall(){ window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; if(q('installBtn')) q('installBtn').classList.remove('hidden'); }); if(q('installBtn')) q('installBtn').onclick = async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; if(q('installBtn')) q('installBtn').classList.add('hidden'); }; }
+// 🔥 FORCED PWA INSTALL LOGIC 🔥
+function setupInstall(){
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const btn = q('installBtn');
+        if(btn) {
+            btn.style.background = '#40b46b'; // Turns green!
+            btn.style.color = '#fff';
+            btn.textContent = 'READY TO INSTALL';
+        }
+    });
+    
+    const btn = q('installBtn');
+    if(btn) {
+        btn.onclick = async () => {
+            if(!deferredPrompt) {
+                alert("Browser says 'Not Ready'! 🛑\n\n1. Did you push your manifest.json to GitHub?\n2. Did you clear your phone's browser cache?\n3. Are you using an iPhone? (iPhones block this button. Use Share -> Add to Home Screen instead).");
+                return;
+            }
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if(outcome === 'accepted') {
+                deferredPrompt = null;
+                btn.classList.add('hidden');
+            }
+        };
+    }
+}
 
 function initApp() {
     try { setupTabs(); } catch(e) { console.error('setupTabs failed:', e); }
