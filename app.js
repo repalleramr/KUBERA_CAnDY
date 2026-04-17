@@ -44,7 +44,8 @@ function triggerStagePopup(amount) {
     setTimeout(() => popup.remove(), 1800);
 }
 
-const defaultSettings = { bankroll: 0, targetDollar: 500, targetPercent: 1.67, stopLoss: 30000, min: 200, max: 3000, coin: 100, targetNum: 1000, doubleLadder: 'on', keypadMode: 'combined', maxSteps: 30, reserve: 20000, capRule: 'on', stopLossPerNumber: -100, attackMode: 'classic', theme: 'warhunt', vaultBg: 'bg-molten' };
+// 🔥 ADDED CAP RETURN SETTING TO DEFAULTS 🔥
+const defaultSettings = { bankroll: 0, targetDollar: 500, targetPercent: 1.67, stopLoss: 30000, min: 200, max: 3000, coin: 100, targetNum: 1000, doubleLadder: 'on', keypadMode: 'combined', maxSteps: 30, reserve: 20000, capRule: 'on', capReturn: 'on', stopLossPerNumber: -100, attackMode: 'classic', theme: 'warhunt', vaultBg: 'bg-molten' };
 const titles = { sangram:'⚔ SANGRAM', vyuha:'🛡 VYUHA', granth:'📜 GRANTH', drishti:'👁 DRISHTI', sopana:'🪜 SOPANA', yantra:'⚙ YANTRA', medha:'🧠 MEDHA' };
 const themePalette = { warhunt: { themeColor:'#120a05' }, temple: { themeColor:'#2a1408' }, vault: { themeColor:'#0f1a12' }, oracle: { themeColor:'#0b1024' }, crimson: { themeColor:'#2a0a0d' }, onyx: { themeColor:'#0b0b0d' }, sapphire: { themeColor:'#07182d' }, emerald: { themeColor:'#071f17' }, moon: { themeColor:'#161526' }, thunder: { themeColor:'#10131f' } };
 
@@ -126,6 +127,7 @@ function reviveState(raw){
     if(!Number.isFinite(Number(settings.stopLoss)) || Number(settings.stopLoss)<=0) settings.stopLoss = base.settings.stopLoss; 
     if(!Number.isFinite(Number(settings.stopLossPerNumber))) settings.stopLossPerNumber = base.settings.stopLossPerNumber; 
     if(!settings.doubleLadder) settings.doubleLadder = 'on'; 
+    if(!settings.capReturn) settings.capReturn = 'on'; 
     if(!settings.theme || !themePalette[settings.theme]) settings.theme = base.settings.theme; 
     if(!settings.vaultBg) settings.vaultBg = base.settings.vaultBg; 
     return {
@@ -324,7 +326,7 @@ function renderGranth(){
 
 function renderDrishti(){ if(q('sumChakras')) q('sumChakras').textContent=Math.max(0,state.currentChakra); if(q('sumAhuti')) q('sumAhuti').textContent=state.summary.totalAhuti; if(q('sumProfit')) q('sumProfit').textContent=state.liveBankroll-state.settings.bankroll; if(q('sumExposure')) q('sumExposure').textContent=state.summary.maxExposure; const dt=q('drishtiTable'); if(!dt) return; const tbody=dt.querySelector('tbody'); if(!tbody) return; tbody.innerHTML=''; if(Array.isArray(state.drishti)) [...state.drishti].reverse().forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${r.side}</td><td><span style="font-size:16px; color:var(--gold); font-weight:bold;">${r.number}</span></td><td>${r.activationChakra}</td><td>${r.winChakra}</td><td>${r.steps}</td><td>${r.prevLoss}</td><td>${r.winBet}</td><td>${r.net}</td><td>${r.status}</td>`; tbody.appendChild(tr); }); }
 function renderSopana(){ const lt=q('ladderTable'); if(!lt) return; const tbody=lt.querySelector('tbody'); if(!tbody) return; tbody.innerHTML=''; state.ladder.forEach((row,idx)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${row.step}</td><td><input class="ladder-bet-input" type="number" data-ladder-index="${idx}" inputmode="numeric" enterkeyhint="next" value="${row.bet}"></td><td>${row.winReturn}</td><td>${row.netProfit}</td><td>${row.ifLoseTotal}</td>`; tbody.appendChild(tr); }); const secondTable=q('secondLadderTable'); if(secondTable){ const tbody2=secondTable.querySelector('tbody'); if(tbody2) { tbody2.innerHTML=''; let prevLoss=0; for(let i=1;i<=Math.min(state.settings.maxSteps,15);i++){ const bet=secondLadderBet(i); const winReturn=bet*9; prevLoss += bet; const tr=document.createElement('tr'); tr.innerHTML=`<td>T${i}</td><td><input class="ladder-bet-input" type="number" data-second-ladder-index="${i-1}" inputmode="numeric" enterkeyhint="next" value="${bet}"></td><td>${winReturn}</td><td>${winReturn - prevLoss}</td><td>${-prevLoss}</td>`; tbody2.appendChild(tr); } } } }
-function renderYantra(){ const s=state.settings; if(q('setBankroll')) q('setBankroll').value=s.bankroll; if(q('setTargetDollar')) q('setTargetDollar').value=s.targetDollar; if(q('setTargetPercent')) q('setTargetPercent').value=s.targetPercent; if(q('setStopLoss')) q('setStopLoss').value=s.stopLoss; if(q('setMin')) q('setMin').value=s.min; if(q('setMax')) q('setMax').value=s.max; if(q('setCoin')) q('setCoin').value=s.coin; if(q('setTargetNum')) q('setTargetNum').value=s.targetNum; if(q('setDoubleLadder')) q('setDoubleLadder').value=s.doubleLadder||'on'; if(q('setKeypadMode')) q('setKeypadMode').value=s.keypadMode; if(q('setMaxSteps')) q('setMaxSteps').value=s.maxSteps; if(q('setReserve')) q('setReserve').value=s.reserve; if(q('setCapRule')) q('setCapRule').value=s.capRule; if(q('setAttackMode')) q('setAttackMode').value=s.attackMode || 'classic'; if(q('setTheme')) q('setTheme').value=s.theme || 'warhunt'; if(q('setVaultBg')) q('setVaultBg').value=s.vaultBg || 'bg-molten'; if(q('setStopLossPerNumber')) q('setStopLossPerNumber').value=s.stopLossPerNumber ?? -100; }
+function renderYantra(){ const s=state.settings; if(q('setBankroll')) q('setBankroll').value=s.bankroll; if(q('setTargetDollar')) q('setTargetDollar').value=s.targetDollar; if(q('setTargetPercent')) q('setTargetPercent').value=s.targetPercent; if(q('setStopLoss')) q('setStopLoss').value=s.stopLoss; if(q('setMin')) q('setMin').value=s.min; if(q('setMax')) q('setMax').value=s.max; if(q('setCoin')) q('setCoin').value=s.coin; if(q('setTargetNum')) q('setTargetNum').value=s.targetNum; if(q('setDoubleLadder')) q('setDoubleLadder').value=s.doubleLadder||'on'; if(q('setKeypadMode')) q('setKeypadMode').value=s.keypadMode; if(q('setMaxSteps')) q('setMaxSteps').value=s.maxSteps; if(q('setReserve')) q('setReserve').value=s.reserve; if(q('setCapRule')) q('setCapRule').value=s.capRule; if(q('setCapReturn')) q('setCapReturn').value=s.capReturn || 'on'; if(q('setAttackMode')) q('setAttackMode').value=s.attackMode || 'classic'; if(q('setTheme')) q('setTheme').value=s.theme || 'warhunt'; if(q('setVaultBg')) q('setVaultBg').value=s.vaultBg || 'bg-molten'; if(q('setStopLossPerNumber')) q('setStopLossPerNumber').value=s.stopLossPerNumber ?? -100; }
 function renderMedha(){ const active=[]; const cap=[]; ['Y','K'].forEach(side=>{ for(let n=1;n<=9;n++){ const info=state.numbers[side][n]; if(info.status==='A'||info.status==='B') active.push(`${side} ${n} T${info.step}`); if(info.status==='C') cap.push(`${side} ${n}`);} }); if(q('medhaPanel')) q('medhaPanel').innerHTML=`<div class="medha-item"><div class="label">Active Summons</div><div style="font-size:16px">${active.join(' | ') || 'None'}</div></div><div class="medha-item"><div class="label">Stunned Summons</div><div style="font-size:16px">${cap.join(' | ') || 'None'}</div></div>`; }
 function renderActiveTab(){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===`screen-${state.activeTab}`)); document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.target===state.activeTab)); if(q('screenTitle')) q('screenTitle').textContent=titles[state.activeTab]||titles.sangram; }
 function renderAll(){ applyTheme(state.settings.theme || 'warhunt'); applyBackground(state.settings.vaultBg || 'bg-molten'); renderActiveTab(); renderBoards(); renderVyuha(); renderSangram(); renderGranth(); renderDrishti(); renderSopana(); renderYantra(); renderMedha(); saveState(); }
@@ -336,11 +338,16 @@ function undoLast(){ const prev=historyStack.pop(); if(!prev) return; redoStack.
 function redoLast(){ const next=redoStack.pop(); if(!next) return; historyStack.push(historySnapshot()); restoreSnapshot(next); renderAll(); showToast('TIMELINE RESTORED','Wave restored'); }
 function pushDrishti(rec){ if(!Array.isArray(state.drishti)) state.drishti = []; state.drishti.push(rec); }
 
-// 🔥 SILENT CALCULATORS FOR SETTINGS & IMPORTS 🔥
+// 🔥 SILENT CALCULATORS - NOW RESPECTS CAP RETURN SETTING 🔥
 function resolveNumberSilent(side,num,rowEvents,shouldReturnFromCap=false){
   const info=state.numbers[side][num];
   if(!info || info.status==='L') return;
-  if(info.status==='C'){ if(!shouldReturnFromCap) return; info.status='B'; info.ladder=2; info.step=1; info.pendingSecond=false; if(rowEvents) rowEvents.ret.push(`${side}${num}`); return; }
+  if(info.status==='C'){ 
+      if(state.settings.capReturn === 'off' || !shouldReturnFromCap) return; 
+      info.status='B'; info.ladder=2; info.step=1; info.pendingSecond=false; 
+      if(rowEvents) rowEvents.ret.push(`${side}${num}`); 
+      return; 
+  }
   const mode = getAttackMode(); const threshold = attackThresholdForMode(mode);
   if(info.status==='I'){ if(threshold===1){ activateTrackedNumber(info); } else { info.status='W'; info.watchCount = 1; info.activeAt = null; info.prevLoss = 0; info.step = 0; info.ladder = 1; } return; }
   if(info.status==='W'){ info.watchCount = Number(info.watchCount||0) + 1; if(info.watchCount >= threshold){ activateTrackedNumber(info); } return; }
@@ -348,6 +355,7 @@ function resolveNumberSilent(side,num,rowEvents,shouldReturnFromCap=false){
   state.liveBankroll += totalReturn; info.winningBet=bet; info.lastNet=net; pushDrishti({ side, number:num, activationChakra:info.activeAt ?? state.currentChakra, winChakra:state.currentChakra, steps:info.step, prevLoss:info.prevLoss, winBet:bet, net, status:'LOOTED' });
   if(rowEvents) rowEvents.np.push(`${side}${num} ${net >= 0 ? '+' : ''}${net}`); info.status='L';
 }
+
 function advanceAfterLossSilent(side,rowEvents,winningNum=null){
   for(let n=1;n<=9;n++){
     if(winningNum!==null && Number(winningNum)===n) continue;
@@ -365,7 +373,18 @@ function advanceAfterLossSilent(side,rowEvents,winningNum=null){
 async function resolveNumber(side,num,notes,rowEvents){ 
   const info=state.numbers[side][num]; 
   if(info.status==='L'){ return; }
-  if(info.status==='C'){ const shouldReturn = await askCapReturnDecision(side,num); if(!shouldReturn) return; info.status='B'; info.ladder=2; info.step=1; info.pendingSecond=false; if(rowEvents) rowEvents.ret.push(`${side}${num}`); notes.push({title:'SUMMON REVIVED',text:`${num} back in battle`,kind:'warn'}); return; }
+  if(info.status==='C'){ 
+      if(state.settings.capReturn === 'off') {
+          notes.push({title:'REVIVE DISABLED',text:`${num} cannot return from stun`,kind:'warn'});
+          return;
+      }
+      const shouldReturn = await askCapReturnDecision(side,num); 
+      if(!shouldReturn) return; 
+      info.status='B'; info.ladder=2; info.step=1; info.pendingSecond=false; 
+      if(rowEvents) rowEvents.ret.push(`${side}${num}`); 
+      notes.push({title:'SUMMON REVIVED',text:`${num} back in battle`,kind:'warn'}); 
+      return; 
+  }
   const mode = getAttackMode(); const threshold = attackThresholdForMode(mode);
   if(info.status==='I'){ if(threshold===1){ activateTrackedNumber(info); } else { info.status='W'; info.watchCount = 1; info.activeAt = null; info.prevLoss = 0; info.step = 0; info.ladder = 1; } return; }
   if(info.status==='W'){ info.watchCount = Number(info.watchCount||0) + 1; if(info.watchCount >= threshold){ activateTrackedNumber(info); } return; }
@@ -635,7 +654,7 @@ function safeBind(id, fn, event = 'click') {
 
 function readYantraSettings(){
   const current = clone(state.settings); const bankrollRaw = Number(q('setBankroll')?.value); current.bankroll = Number.isFinite(bankrollRaw) && bankrollRaw >= 0 ? bankrollRaw : defaultSettings.bankroll;
-  current.targetDollar = Number(q('setTargetDollar')?.value)||500; current.targetPercent = Number(q('setTargetPercent')?.value)||1.67; current.stopLoss = Number(q('setStopLoss')?.value)||30000; current.min = Number(q('setMin')?.value)||200; current.max = Number(q('setMax')?.value)||3000; current.coin = Number(q('setCoin')?.value)||100; current.targetNum = Number(q('setTargetNum')?.value)||1000; current.doubleLadder = q('setDoubleLadder')?.value || 'on'; current.keypadMode = q('setKeypadMode')?.value || 'combined'; current.maxSteps = Number(q('setMaxSteps')?.value)||30; current.reserve = Number(q('setReserve')?.value)||20000; current.capRule = q('setCapRule')?.value || 'on';
+  current.targetDollar = Number(q('setTargetDollar')?.value)||500; current.targetPercent = Number(q('setTargetPercent')?.value)||1.67; current.stopLoss = Number(q('setStopLoss')?.value)||30000; current.min = Number(q('setMin')?.value)||200; current.max = Number(q('setMax')?.value)||3000; current.coin = Number(q('setCoin')?.value)||100; current.targetNum = Number(q('setTargetNum')?.value)||1000; current.doubleLadder = q('setDoubleLadder')?.value || 'on'; current.keypadMode = q('setKeypadMode')?.value || 'combined'; current.maxSteps = Number(q('setMaxSteps')?.value)||30; current.reserve = Number(q('setReserve')?.value)||20000; current.capRule = q('setCapRule')?.value || 'on'; current.capReturn = q('setCapReturn')?.value || 'on';
   if(q('setAttackMode')) current.attackMode = q('setAttackMode').value || 'classic'; current.theme = q('setTheme')?.value || 'warhunt'; current.vaultBg = q('setVaultBg')?.value || 'bg-molten'; const stopLossPerNumberValue = Number(q('setStopLossPerNumber')?.value); current.stopLossPerNumber = Number.isFinite(stopLossPerNumberValue) ? stopLossPerNumberValue : -100; return current;
 }
 
@@ -1027,7 +1046,6 @@ function setupControls() {
   safeBind('historyUndoBtn', () => { if(typeof undoLast === 'function') undoLast(); });
 }
 
-// 🔥 FORCED INSTALL LOGIC WITH BUILT-IN BYPASS NOTIFICATION 🔥
 function setupInstall(){
     window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
