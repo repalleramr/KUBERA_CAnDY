@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'kubera-warhunt-v5pro-final-locked';
 
-const puzzleSymbols = ['💎','🔥','⚡','🌟','🔮','🎲','🌙','☀️','💠','🔱','🧿','🧩','👑','🏺','🗿','📜','🗡️','🛡️','🪙','🐉','🐲','👹','👺','📿','⚕️','🪬','🎐','🏮','🎭','🎴'];
+// 🔥 CANDY CRUSH SYMBOLS 
+const puzzleSymbols = ['🍬', '🍭', '🍫', '🍩', '🍪', '🧁', '🧊', '🍇', '🍓', '🍒', '🍋', '🍏', '🍉', '🍯'];
 const romanMap = ['🌀', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
 
 let audioCtx = null;
@@ -35,7 +36,6 @@ function playSound(event) {
     }
 }
 
-// 🔥 UPDATED WIN MESSAGE 🔥
 function triggerStagePopup(amount) {
     const popup = document.createElement('div');
     popup.className = 'stage-popup';
@@ -44,7 +44,7 @@ function triggerStagePopup(amount) {
     setTimeout(() => popup.remove(), 1800);
 }
 
-const defaultSettings = { bankroll: 0, targetDollar: 500, targetPercent: 1.67, stopLoss: 100000, min: 200, max: 3000, coin: 100, targetNum: 1000, doubleLadder: 'on', keypadMode: 'combined', maxSteps: 30, reserve: -200000, capRule: 'on', stopLossPerNumber: -100, attackMode: 'classic', theme: 'warhunt', vaultBg: 'bg-molten' };
+const defaultSettings = { bankroll: 0, targetDollar: 500, targetPercent: 1.67, stopLoss: 30000, min: 200, max: 3000, coin: 100, targetNum: 1000, doubleLadder: 'on', keypadMode: 'combined', maxSteps: 30, reserve: 20000, capRule: 'on', stopLossPerNumber: -100, attackMode: 'classic', theme: 'warhunt', vaultBg: 'bg-molten' };
 const titles = { sangram:'⚔ SANGRAM', vyuha:'🛡 VYUHA', granth:'📜 GRANTH', drishti:'👁 DRISHTI', sopana:'🪜 SOPANA', yantra:'⚙ YANTRA', medha:'🧠 MEDHA' };
 const themePalette = { warhunt: { themeColor:'#120a05' }, temple: { themeColor:'#2a1408' }, vault: { themeColor:'#0f1a12' }, oracle: { themeColor:'#0b1024' }, crimson: { themeColor:'#2a0a0d' }, onyx: { themeColor:'#0b0b0d' }, sapphire: { themeColor:'#07182d' }, emerald: { themeColor:'#071f17' }, moon: { themeColor:'#161526' }, thunder: { themeColor:'#10131f' } };
 
@@ -55,7 +55,7 @@ function spawnButtonParticles(side, num, type) {
   const btn = document.querySelector(`button.tile[data-side="${side}"][data-num="${num}"]`);
   let cx = window.innerWidth / 2; let cy = window.innerHeight / 2;
   if (btn) { const rect = btn.getBoundingClientRect(); cx = rect.left + rect.width / 2; cy = rect.top + rect.height / 2; }
-  const emojis = type === 'win' ? ['💎', '💰', '✨', '🏆'] : ['💀', '💢', '💨', '🌧️'];
+  const emojis = ['🍬','🍭','✨','💥','🌟','🍓'];
   for (let i = 0; i < 15; i++) {
       const p = document.createElement('div'); p.className = `particle ${type}`; p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
       p.style.left = cx + 'px'; p.style.top = cy + 'px';
@@ -182,35 +182,54 @@ function statusCode(info){
 }
 function vijayDarshanaDisplay(info){ const bet=currentBetFor(info); return { bet, displayStep:Math.max(1,(Number(info.step)||1)-1), displayNet:(bet*8)-(Number(info.prevLoss)||0) }; }
 
+// 🔥 RENDER BOARDS: SELECTIVE UPDATING TO PRESERVE ANIMATIONS 🔥
 function renderBoards(){
   ['Y','K'].forEach(side=>{
-    const host=q(side==='Y'?'boardY':'boardK'); if(!host) return; host.innerHTML='';
+    const host=q(side==='Y'?'boardY':'boardK'); if(!host) return;
     const layout = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'D1', 0, 'D2'];
     
-    layout.forEach(n => {
-      const isDummy = typeof n === 'string';
-      const isZero = n === 0;
-      const info = (isDummy || isZero) ? null : (state?.numbers?.[side]?.[n] || freshNumber());
-      const btn=document.createElement('button'); 
-      const code = (isDummy || isZero) ? '' : statusCode(info); 
-      const metaClass = (!isDummy && !isZero && info?.step) ? `step${Math.min(info.step, 6)}` : '';
-      
-      let classes = 'tile';
-      if (info && info.status !== 'I') classes += ` state-${info.status}`;
-      if (isDummy) classes += ' dummy';
-      if (isZero) classes += ' zero';
-      
-      btn.type='button'; btn.className=classes.trim(); btn.dataset.side=side; btn.dataset.num=String(n);
-      
-      let decoyContent = '';
-      if (!isDummy && !isZero && info && info.status === 'L') decoyContent = `<div class="decoy-score">👑 ${info.lastNet || 0}</div>`;
-      else if (!isDummy && !isZero && info && info.status === 'C') decoyContent = `<div class="decoy-stun">⛓️</div>`;
-      else decoyContent = `<div class="decoy-symbol">${puzzleSymbols[Math.floor(Math.random() * puzzleSymbols.length)]}</div>`;
-      
-      const metaHtml = code ? `<div class="meta ${metaClass}">${code}</div>` : '';
-      const numHtml = isDummy ? '' : `<div class="num">${n}</div>`;
-      
-      btn.innerHTML=`${numHtml}${decoyContent}${metaHtml}`; host.appendChild(btn);
+    // Create grid ONLY if empty to preserve inner DOM for Candy Crush effects
+    if (host.children.length === 0) {
+        layout.forEach(n => {
+            const btn = document.createElement('button');
+            btn.dataset.side = side; btn.dataset.num = String(n);
+            btn.innerHTML = `
+                <div class="num" style="display: block !important; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 55px !important; font-weight: 900; color: rgba(255, 255, 255, 0.18) !important; z-index: 1; pointer-events: none;">${n === 'D1' || n === 'D2' ? '' : n}</div>
+                <div class="decoy-symbol">${puzzleSymbols[Math.floor(Math.random() * puzzleSymbols.length)]}</div>
+                <div class="decoy-overlay"></div>
+                <div class="meta"></div>
+            `;
+            host.appendChild(btn);
+        });
+    }
+
+    // Now simply update properties on existing nodes without wiping innerHTML
+    layout.forEach((n, idx) => {
+        const btn = host.children[idx];
+        const isDummy = typeof n === 'string';
+        const isZero = n === 0;
+        const info = (isDummy || isZero) ? null : (state?.numbers?.[side]?.[n] || freshNumber());
+        const code = (isDummy || isZero) ? '' : statusCode(info); 
+        const metaClass = (!isDummy && !isZero && info?.step) ? `step${Math.min(info.step, 6)}` : '';
+        
+        let classes = 'tile';
+        if (info && info.status !== 'I') classes += ` state-${info.status}`;
+        if (isDummy) classes += ' dummy';
+        if (isZero) classes += ' zero';
+        btn.className = classes.trim();
+
+        const overlay = btn.querySelector('.decoy-overlay');
+        if(overlay) {
+            if (!isDummy && !isZero && info && info.status === 'L') overlay.innerHTML = `<div class="decoy-score">👑 ${info.lastNet || 0}</div>`;
+            else if (!isDummy && !isZero && info && info.status === 'C') overlay.innerHTML = `<div class="decoy-stun">⛓️</div>`;
+            else overlay.innerHTML = '';
+        }
+
+        const metaEl = btn.querySelector('.meta');
+        if(metaEl) {
+            metaEl.className = `meta ${metaClass}`;
+            metaEl.textContent = code;
+        }
     });
   });
 }
@@ -395,18 +414,63 @@ async function processIndividual(side,num){ recordSnapshot(); state.currentChakr
   renderAll(); notes.forEach(n=>showToast(n.title,n.text,n.kind||'')); }
 function flashLockedKey(el){ if(!el) return; el.classList.add('key-locked-flash'); setTimeout(()=>el.classList.remove('key-locked-flash'), 220); }
 
+// 🔥 CANDY CRUSH CASCADE ENGINE 🔥
+function triggerCascade(side, clickedNum) {
+    const cols = {
+       '1': [1,4,7,'D1'], '4': [1,4,7,'D1'], '7': [1,4,7,'D1'], 'D1': [1,4,7,'D1'],
+       '2': [2,5,8,0],    '5': [2,5,8,0],    '8': [2,5,8,0],    '0': [2,5,8,0],
+       '3': [3,6,9,'D2'], '6': [3,6,9,'D2'], '9': [3,6,9,'D2'], 'D2': [3,6,9,'D2']
+    };
+    const col = cols[String(clickedNum)];
+    if(!col) return;
+    const cIdx = col.indexOf(clickedNum===0 ? 0 : (typeof clickedNum === 'string' ? clickedNum : Number(clickedNum)));
+    const host = q(side === 'Y' ? 'boardY' : 'boardK');
+    if(!host) return;
+
+    const clickedBtn = host.querySelector(`[data-num="${clickedNum}"]`);
+    if(clickedBtn) {
+        const clickedSym = clickedBtn.querySelector('.decoy-symbol');
+        if(clickedSym) {
+            clickedSym.style.animation = 'none'; void clickedSym.offsetWidth;
+            clickedSym.style.animation = 'candyBlast 0.25s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        }
+    }
+
+    setTimeout(() => {
+        for(let i = cIdx; i > 0; i--) {
+            const curBtn = host.querySelector(`[data-num="${col[i]}"]`);
+            const aboveBtn = host.querySelector(`[data-num="${col[i-1]}"]`);
+            if(!curBtn || !aboveBtn) continue;
+            
+            const curSym = curBtn.querySelector('.decoy-symbol');
+            const aboveSym = aboveBtn.querySelector('.decoy-symbol');
+            
+            if(curSym && aboveSym) {
+                curSym.textContent = aboveSym.textContent;
+                curSym.style.animation = 'none'; void curSym.offsetWidth;
+                curSym.style.animation = 'candyDrop 0.3s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            }
+        }
+        const topBtn = host.querySelector(`[data-num="${col[0]}"]`);
+        if(topBtn) {
+            const topSym = topBtn.querySelector('.decoy-symbol');
+            if(topSym) {
+                topSym.textContent = puzzleSymbols[Math.floor(Math.random() * puzzleSymbols.length)];
+                topSym.style.animation = 'none'; void topSym.offsetWidth;
+                topSym.style.animation = 'candyDropTop 0.35s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            }
+        }
+    }, 150); 
+}
+
 async function handleTap(side,num,el){
   initAudio(); 
   if(keypadBusy) return;
 
+  triggerCascade(side, num);
+
   if (num === 'D1' || num === 'D2') { 
       glowKey(el);
-      document.querySelectorAll('.decoy-symbol').forEach(node => {
-          node.textContent = puzzleSymbols[Math.floor(Math.random() * puzzleSymbols.length)];
-          node.style.animation = 'none';
-          void node.offsetWidth; 
-          node.style.animation = 'shufflePop 0.3s ease-out';
-      });
       return; 
   }
   
@@ -806,7 +870,7 @@ function processDataImport(text) {
     }
 }
 
-// 🔥 DRISHTI SPECIFIC EXPORTS 🔥
+// 🔥 DRISHTI SPECIFIC EXPORTS FIXED 🔥
 async function exportDrishtiCsv() {
     if (!Array.isArray(state.drishti) || state.drishti.length === 0) {
         showToast('EMPTY', 'No data to export', 'warn'); return;
@@ -917,7 +981,7 @@ function setupControls() {
   });
   document.addEventListener('focusin', e => { const el = e.target; if(el instanceof HTMLInputElement && el.matches('[data-ladder-index]')) setTimeout(() => el.select(), 0); });
   
-  // DRISHTI BINDS NOW LINKED TO THE FIXED EXPORT FUNCTIONS
+  // 🔥 FIXED DRISHTI BINDS 🔥
   safeBind('exportCsvBtn', () => { if (typeof exportDrishtiCsv === 'function') exportDrishtiCsv(); else showToast('INFO', 'Drishti CSV export not available', 'warn'); });
   safeBind('exportPdfBtn', () => { if (typeof exportDrishtiPdf === 'function') exportDrishtiPdf(); else showToast('INFO', 'PDF export not available', 'warn'); });
   
