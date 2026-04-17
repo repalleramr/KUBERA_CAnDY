@@ -1,214 +1,282 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="./manifest.json">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Kubera_V5Pro Final locked</title>
-  <meta name="theme-color" content="#120a05">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kubera Omega</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#120a05">
 </head>
-<body>
-  <div id="toastLayer" class="toast-layer"></div>
-  <div id="app">
-    <header class="fixed-shell">
-      <div class="topbar">
-        <div>
-          <div class="brand">Mythology Treasury War</div>
-          <div id="screenTitle" class="screen-title">⚔ SANGRAM</div>
+<body data-vault-bg="bg-molten">
+
+    <div id="app">
+        <div class="fixed-shell">
+            <div class="topbar">
+                <div class="brand">KUBERA OMEGA</div>
+                <div class="screen-title" id="screenTitle">⚔ SANGRAM</div>
+                <button id="installBtn" class="install-btn hidden">INSTALL</button>
+            </div>
         </div>
-        <button id="installBtn" class="install-btn hidden">Install App</button>
-      </div>
-      <section class="card glow bankroll-card">
-        <div class="label">DIAMOND STASH</div>
-        <div id="bankValue" class="bank">💎 0</div>
-      </section>
-    </header>
 
-    <main class="content-pad">
-      <section id="screen-sangram" class="screen active">
-        <section class="boards-compact sangram-boards">
-          <div class="board-block">
-            <div class="board-title">YAKSHA</div>
-            <div id="boardY" class="treasure-grid compact"></div>
-          </div>
-          <div class="board-block">
-            <div class="board-title">KINNARA</div>
-            <div id="boardK" class="treasure-grid compact"></div>
-          </div>
-        </section>
+        <div class="content-pad">
 
-        <section class="action-strip compact-card">
-          <button id="kumbhaBtn" class="warn strip-btn" style="font-size: 20px;">🛑</button>
-          <button id="undoBtn" class="strip-btn" style="font-size: 20px;">⏪</button>
-          <button id="redoBtn" class="strip-btn" style="font-size: 20px;">⏩</button>
-          <button id="prayogaBtn" class="strip-btn" style="font-size: 20px;">⚔️</button>
-        </section>
+            <div id="screen-sangram" class="screen active">
+                <div class="card bankroll-card">
+                    <div class="label">Diamond Stash</div>
+                    <div class="bank" id="bankValue">💎 0</div>
+                </div>
 
-        <section class="card compact-card">
-          <div class="label">PREVIOUS ENCOUNTER</div>
-          <div id="lastResultValue" class="last-result" style="font-size: 20px; margin-top: 4px;">-</div>
-        </section>
+                <div class="compact-card">
+                    <div class="chakra-line">
+                        <div class="chakra-value" id="chakraValue">Wave : 0</div>
+                        <div class="btn-row">
+                            <button id="prayogaBtn">Start Raid</button>
+                            <button id="kumbhaBtn" class="warn">End Raid</button>
+                        </div>
+                    </div>
+                    <div class="ahuti-row" id="nextY">YAKSHA: Idle</div>
+                    <div class="ahuti-row" id="nextK">KINNARA: Idle</div>
+                    <div class="total" id="nextT">Total Queue: + 0</div>
+                </div>
 
-        <section class="card compact-card">
-          <div class="label">QUEUED SPELLS</div>
-          <div id="nextY" class="ahuti-row">YAKSHA -</div>
-          <div id="nextK" class="ahuti-row">KINNARA -</div>
-          <div id="nextT" class="total">Total MP: 0</div>
-        </section>
+                <div class="compact-card" style="margin-top: 8px; text-align: center;">
+                    <div class="label">Last Encounter</div>
+                    <div id="lastResultValue" style="display: flex; justify-content: center;">
+                        <div style="display:flex; gap:16px; align-items:center; padding: 4px 0;">
+                            <div class="billiard-ball ball-empty">-</div> 
+                            <span style="color:var(--gold); font-weight:900; font-size:16px;">VS</span> 
+                            <div class="billiard-ball ball-empty">-</div>
+                        </div>
+                    </div>
+                </div>
 
-        <section class="card compact-card chakra-card">
-          <div class="chakra-line chakra-right">
-            <div class="chakra-copy">
-              <div class="label">CURRENT WAVE</div>
-              <div id="chakraValue" class="chakra-value">Wave : 0</div>
+                <div class="boards-compact">
+                    <div class="card board-block">
+                        <div class="board-title">Yaksha</div>
+                        <div class="treasure-grid" id="boardY"></div>
+                    </div>
+                    <div class="card board-block">
+                        <div class="board-title">Kinnara</div>
+                        <div class="treasure-grid" id="boardK"></div>
+                    </div>
+                </div>
+
+                <div class="toolbar" style="margin-top: 12px; justify-content: center;">
+                    <div class="btn-row">
+                        <button id="undoBtn">⏪ Undo</button>
+                        <button id="redoBtn">Redo ⏩</button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </section>
-      </section>
 
-      <section id="screen-vyuha" class="screen">
-        <div class="split-grid">
-          <section class="card"><div class="label">YAKSHA SUMMONS</div><div id="vyuhaY" class="state-grid"></div></section>
-          <section class="card"><div class="label">KINNARA SUMMONS</div><div id="vyuhaK" class="state-grid"></div></section>
-        </div>
-      </section>
-
-      <section id="screen-granth" class="screen">
-        <section class="card">
-          <div class="toolbar">
-            <div class="label">RAID HISTORY (GRANTH)</div>
-            <div class="btn-row">
-              <select id="granthExportFormat" class="toolbar-select"><option value="json">JSON</option><option value="csv">CSV</option><option value="xlsx">XLSX</option></select>
-              <button id="exportGranthBtn">Export</button>
-              <button id="importGranthBtn">Load</button>
-              <select id="deleteKumbhSelect"><option value="">Select Raid</option></select>
-              <button id="deleteGranthBtn" class="warn">Delete</button>
-              <input id="importGranthFile" type="file" accept=".json,.csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+            <div id="screen-vyuha" class="screen">
+                <div class="split-grid">
+                    <div class="card">
+                        <div class="label">Yaksha Array</div>
+                        <div class="state-grid" id="vyuhaY"></div>
+                    </div>
+                    <div class="card">
+                        <div class="label">Kinnara Array</div>
+                        <div class="state-grid" id="vyuhaK"></div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div id="granthList" class="granth-list"></div>
-        </section>
-      </section>
 
-      <section id="screen-drishti" class="screen">
-        <section class="summary-grid">
-          <div class="card stat"><div class="label">Waves Cleared</div><div id="sumChakras" class="stat-value">0</div></div>
-          <div class="card stat"><div class="label">Total MP Used</div><div id="sumAhuti" class="stat-value">0</div></div>
-          <div class="card stat"><div class="label">Net Loot Gained</div><div id="sumProfit" class="stat-value">0</div></div>
-          <div class="card stat"><div class="label">Max Mana Drain</div><div id="sumExposure" class="stat-value">0</div></div>
-        </section>
-        <section class="card">
-          <div class="toolbar">
-            <div class="label">SUMMON PERFORMANCE</div>
-            <div class="btn-row">
-              <button id="exportCsvBtn">Export CSV</button>
-              <button id="exportPdfBtn">Save PDF</button>
-              <button id="loadCsvBtn">Load CSV</button>
-              <input id="loadCsvFile" type="file" accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+            <div id="screen-granth" class="screen">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="label">Archive Controls</div>
+                        <div class="btn-row">
+                            <button id="historyUndoBtn">⏪ Undo</button>
+                        </div>
+                    </div>
+                    <div class="action-strip">
+                        <select id="granthExportFormat" style="flex:1; background:rgba(0,0,0,0.8); border:1px solid var(--gold); color:#FFF; border-radius:10px; padding:8px;">
+                            <option value="xlsx">Excel (.xlsx)</option>
+                            <option value="csv">CSV Sheet</option>
+                            <option value="json">JSON Backup</option>
+                        </select>
+                        <button id="exportGranthBtn" style="flex:1">Export</button>
+                        <button id="importGranthBtn" style="flex:1">Import</button>
+                        <input type="file" id="importGranthFile" accept=".json,.csv,.xlsx" class="hidden">
+                    </div>
+                    <div class="action-strip" style="margin-top:8px;">
+                        <select id="deleteKumbhSelect" style="flex:2; background:rgba(0,0,0,0.8); border:1px solid #cf4c3c; color:#FFF; border-radius:10px; padding:8px;">
+                            <option value="">Select Raid</option>
+                        </select>
+                        <button id="deleteGranthBtn" class="warn" style="flex:1">Delete</button>
+                    </div>
+                </div>
+                <div id="granthList" style="margin-top: 12px; display: grid; gap: 12px;"></div>
             </div>
-          </div>
-          <div class="table-wrap compact-table"><table id="drishtiTable"><thead><tr><th>Faction</th><th>Summon</th><th>Act. Wave</th><th>Loot Wave</th><th>Tiers</th><th>Mana Drain</th><th>Power Cast</th><th>Net XP</th><th>Status</th></tr></thead><tbody></tbody></table></div>
-        </section>
-      </section>
 
-      <section id="screen-sopana" class="screen">
-        <section class="card compact-sopana-card">
-          <div class="toolbar">
-            <div class="label">SPELL TIERS - 1ST LADDER</div>
-            <div class="btn-row">
-              <button id="saveLadderBtn">Save</button>
-              <button id="exportLadderBtn">Export CSV</button>
-              <button id="loadLadderBtn">Load CSV</button>
-              <button id="resetLadderBtn">Reset</button>
-              <input id="loadLadderFile" type="file" accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+            <div id="screen-drishti" class="screen">
+                <div class="summary-grid">
+                    <div class="card"><div class="label">Total Waves</div><div class="stat-value" id="sumChakras">0</div></div>
+                    <div class="card"><div class="label">Total Magic</div><div class="stat-value" id="sumAhuti">0</div></div>
+                    <div class="card"><div class="label">Net Gain</div><div class="stat-value" id="sumProfit">0</div></div>
+                    <div class="card"><div class="label">Max Exposure</div><div class="stat-value" id="sumExposure">0</div></div>
+                </div>
+                
+                <div class="card" style="margin-top: 12px;">
+                    <div class="action-strip">
+                        <button id="exportCsvBtn" style="flex:1">Export CSV</button>
+                        <button id="exportPdfBtn" style="flex:1">Export PDF</button>
+                        <button id="loadCsvBtn" style="flex:1">Import CSV</button>
+                        <input type="file" id="loadCsvFile" accept=".csv" class="hidden">
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table id="drishtiTable">
+                        <thead>
+                            <tr>
+                                <th>Side</th><th>Summon</th><th>Act. Wave</th><th>Win Wave</th>
+                                <th>Tiers</th><th>Prev Loss</th><th>Win Bet</th><th>Net Profit</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-          </div>
-          <div class="table-wrap compact-table"><table id="ladderTable"><thead><tr><th>Tier</th><th>MP Cost</th><th>Loot Return</th><th>Net XP</th><th>If Failed Drain</th></tr></thead><tbody></tbody></table></div>
-        </section>
-        <section class="card compact-card compact-sopana-card">
-          <div class="toolbar">
-            <div class="label">SPELL TIERS - 2ND LADDER</div>
-          </div>
-          <div class="table-wrap compact-table"><table id="secondLadderTable"><thead><tr><th>Tier</th><th>MP Cost</th><th>Loot Return</th><th>Net XP</th><th>If Failed Drain</th></tr></thead><tbody></tbody></table></div>
-        </section>
-      </section>
 
-      <section id="screen-yantra" class="screen">
-        <section class="card yantra-card">
-          <div class="label">GAME SETTINGS (YANTRA)</div>
-          <div class="settings-grid">
-            <label><span>Diamond Stash Base</span><input id="setBankroll" type="number"></label>
-            <label><span>Target Loot</span><input id="setTargetDollar" type="number"></label>
-            <label><span>Target %</span><input id="setTargetPercent" type="number" step="0.01"></label>
-            <label><span>Mana Depletion Limit</span><input id="setStopLoss" type="number"></label>
-            <label><span>Min Power</span><input id="setMin" type="number"></label>
-            <label><span>Max Power</span><input id="setMax" type="number"></label>
-            <label><span>Orb Multiplier</span><select id="setCoin"><option>100</option><option>500</option><option>1000</option><option>5000</option><option>10000</option></select></label>
-            <label><span>Loot / Summon</span><input id="setTargetNum" type="number"></label>
-            <label><span>Double Cast Magic</span><select id="setDoubleLadder"><option value="off">OFF</option><option value="on">ON</option></select></label>
-            <label><span>Casting Mode</span><select id="setKeypadMode"><option value="combined">Combined</option><option value="individual">Individual</option></select></label>
-            <label><span>Max Tiers</span><input id="setMaxSteps" type="number"></label>
-            <label><span>Safe Zone Shield</span><input id="setReserve" type="number"></label>
-            <label><span>Stun Rule (CAP)</span><select id="setCapRule"><option value="on">ON</option><option value="off">OFF</option></select></label>
-            <label><span>Attack Timing</span><select id="setAttackMode"><option value="classic">Classic</option><option value="thirdstrike">3rd Strike</option><option value="fourthstrike">4th Strike</option></select></label>
-            <label><span>Game Theme (UI Colors)</span><select id="setTheme">
-              <option value="warhunt">Warhunt Gold</option>
-              <option value="temple">Temple Ember</option>
-              <option value="vault">Treasure Vault</option>
-              <option value="oracle">Midnight Oracle</option>
-              <option value="crimson">Crimson Empire</option>
-              <option value="onyx">Onyx Sanctum</option>
-              <option value="sapphire">Sapphire Shrine</option>
-              <option value="emerald">Emerald Relic</option>
-              <option value="moon">Moon Ashram</option>
-              <option value="thunder">Thunder Relic</option>
-            </select></label>
-            <label><span>Vault Background (Images)</span><select id="setVaultBg">
-              <option value="bg-molten">Molten Gold Vault</option>
-              <option value="bg-hoard">Treasure Hoard</option>
-              <option value="bg-aura">Divine Aura</option>
-              <option value="bg-temple">Ancient Temple</option>
-            </select></label>
-            <label><span>Stun Limit / Summon</span><input id="setStopLossPerNumber" type="text" inputmode="numeric" placeholder="-100"></label>
-          </div>
-          <div class="save-wrap"><button id="applyYantraBtn">APPLY SETTINGS</button></div>
-        </section>
-      </section>
+            <div id="screen-sopana" class="screen">
+                <div class="card">
+                    <div class="action-strip">
+                        <button id="saveLadderBtn">Save Edit</button>
+                        <button id="resetLadderBtn" class="warn">Reset Default</button>
+                    </div>
+                    <div class="action-strip" style="margin-top:8px;">
+                        <button id="exportLadderBtn">Export CSV</button>
+                        <button id="loadLadderBtn">Import CSV</button>
+                        <input type="file" id="loadLadderFile" accept=".csv" class="hidden">
+                    </div>
+                </div>
+                
+                <h3 style="color: var(--gold); margin-top: 16px; font-size: 14px;">Ladder 1 (Standard)</h3>
+                <div class="table-wrap">
+                    <table id="ladderTable">
+                        <thead>
+                            <tr><th>Tier</th><th>Bet</th><th>Win Return</th><th>Net Profit</th><th>If Lose</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
 
-      <section id="screen-medha" class="screen">
-        <section class="card">
-          <div class="label">BATTLE LOGIC (MEDHA)</div>
-          <div id="medhaPanel" class="medha-panel"></div>
-        </section>
-      </section>
-    </main>
+                <h3 style="color: var(--gold); margin-top: 16px; font-size: 14px;">Ladder 2 (Revive Mode)</h3>
+                <div class="table-wrap">
+                    <table id="secondLadderTable">
+                        <thead>
+                            <tr><th>Tier</th><th>Bet</th><th>Win Return</th><th>Net Profit</th><th>If Lose</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
 
-    <nav class="bottom-nav">
-      <button class="nav active" data-target="sangram">⚔<span>Sangram</span></button>
-      <button class="nav" data-target="vyuha">🛡<span>Vyuha</span></button>
-      <button class="nav" data-target="granth">📜<span>Granth</span></button>
-      <button class="nav" data-target="drishti">👁<span>Drishti</span></button>
-      <button class="nav" data-target="sopana">🪜<span>Sopana</span></button>
-      <button class="nav" data-target="yantra">⚙<span>Yantra</span></button>
-      <button class="nav" data-target="medha">🧠<span>Medha</span></button>
-    </nav>
-  </div>
+            <div id="screen-yantra" class="screen">
+                <div class="card yantra-card">
+                    <div class="settings-grid">
+                        <label><span>Starting Stash</span><input type="number" id="setBankroll" inputmode="numeric"></label>
+                        <label><span>Target Gain (💎)</span><input type="number" id="setTargetDollar" inputmode="numeric"></label>
+                        <label><span>Target Gain (%)</span><input type="number" id="setTargetPercent" step="0.01" inputmode="decimal"></label>
+                        <label><span>Critical Stop Loss</span><input type="number" id="setStopLoss" inputmode="numeric"></label>
+                        <label><span>Minimum Bet</span><input type="number" id="setMin" inputmode="numeric"></label>
+                        <label><span>Maximum Bet</span><input type="number" id="setMax" inputmode="numeric"></label>
+                        <label><span>Coin Chip Size</span><input type="number" id="setCoin" inputmode="numeric"></label>
+                        <label><span>Recovery Target</span><input type="number" id="setTargetNum" inputmode="numeric"></label>
+                        <label><span>Max Tiers</span><input type="number" id="setMaxSteps" inputmode="numeric"></label>
+                        <label><span>Reserve Alert</span><input type="number" id="setReserve" inputmode="numeric"></label>
+                        <label><span>Stun Limit Per Number</span><input type="number" id="setStopLossPerNumber" inputmode="numeric"></label>
+                        
+                        <label><span>Keypad Mode</span>
+                            <select id="setKeypadMode">
+                                <option value="combined">Combined (Wait for both)</option>
+                                <option value="individual">Individual (Instant entry)</option>
+                            </select>
+                        </label>
+                        <label><span>Double Ladder</span>
+                            <select id="setDoubleLadder">
+                                <option value="on">Aggressive (x2)</option>
+                                <option value="off">Steady (+Coin)</option>
+                            </select>
+                        </label>
+                        <label><span>Stun Rule</span>
+                            <select id="setCapRule">
+                                <option value="on">Enabled (Ask at limit)</option>
+                                <option value="off">Disabled (Never Stop)</option>
+                            </select>
+                        </label>
+                        <label><span>Attack Mode</span>
+                            <select id="setAttackMode">
+                                <option value="classic">Instant (Strike 1)</option>
+                                <option value="thirdstrike">Wait 1 (Strike 2)</option>
+                                <option value="fourthstrike">Wait 2 (Strike 3)</option>
+                            </select>
+                        </label>
+                        <label><span>Theme Relic</span>
+                            <select id="setTheme">
+                                <option value="warhunt">Warhunt Gold</option>
+                                <option value="temple">Temple Bronze</option>
+                                <option value="vault">Jade Vault</option>
+                                <option value="oracle">Oracle Purple</option>
+                                <option value="crimson">Crimson Blood</option>
+                                <option value="onyx">Onyx Obsidian</option>
+                                <option value="sapphire">Sapphire Deep</option>
+                                <option value="emerald">Emerald Forest</option>
+                                <option value="moon">Moonlit Silver</option>
+                                <option value="thunder">Thunder Steel</option>
+                            </select>
+                        </label>
+                        <label><span>Vault Background</span>
+                            <select id="setVaultBg">
+                                <option value="bg-molten">Molten Core</option>
+                                <option value="bg-hoard">Dragon Hoard</option>
+                                <option value="bg-aura">Mystic Aura</option>
+                                <option value="bg-temple">Ancient Temple</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="save-wrap">
+                        <button id="applyYantraBtn" style="width: 100%; padding: 14px; font-size: 16px;">Apply Configuration</button>
+                    </div>
+                </div>
+            </div>
 
-  <div id="confirmOverlay" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div id="confirmTitle" class="modal-title">SYSTEM PROMPT</div>
-      <div id="confirmText" class="modal-text">Are you sure?</div>
-      <div class="modal-actions">
-        <button id="confirmCancelBtn">Cancel</button>
-        <button id="confirmOkBtn" class="warn">OK</button>
-      </div>
+            <div id="screen-medha" class="screen">
+                <div id="medhaPanel" class="medha-panel"></div>
+            </div>
+
+        </div> <nav class="bottom-nav">
+            <button class="nav active" data-target="sangram">⚔️</button>
+            <button class="nav" data-target="vyuha">🛡️</button>
+            <button class="nav" data-target="granth">📜</button>
+            <button class="nav" data-target="drishti">👁️</button>
+            <button class="nav" data-target="sopana">🪜</button>
+            <button class="nav" data-target="yantra">⚙️</button>
+            <button class="nav" data-target="medha">🧠</button>
+        </nav>
     </div>
-  </div>
 
-  <script src="app.js"></script>
+    <div id="confirmOverlay" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-title" id="confirmTitle">Confirm</div>
+            <div class="modal-text" id="confirmText">Are you sure?</div>
+            <div class="modal-actions">
+                <button id="confirmCancelBtn">Cancel</button>
+                <button id="confirmOkBtn" class="warn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastLayer" class="toast-layer"></div>
+
+    <script src="app.js"></script>
 </body>
 </html>
